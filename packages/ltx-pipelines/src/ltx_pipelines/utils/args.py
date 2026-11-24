@@ -154,10 +154,10 @@ def basic_arg_parser() -> argparse.ArgumentParser:
         metavar=("PATH", "FRAME_IDX", "STRENGTH"),
         default=[],
         help=(
-            "Image conditioning input: path to image file, target frame index, "
+            "Image conditioning input: path to image file, target frame index (a frame of the output video), "
             "and conditioning strength (all three required). Default: empty list [] (no image conditioning). "
             "Can be specified multiple times. Example: --image path/to/image1.jpg 0 0.8 "
-            "--image path/to/image2.jpg 160 0.9"
+            "--image path/to/image2.jpg 96 0.9"
         ),
     )
     parser.add_argument(

@@ -56,13 +56,14 @@ def image_conditionings_by_replacing_latent(
             device=device,
         )
         encoded_image = video_encoder(image)
-        conditionings.append(
-            VideoConditionByLatentIndex(
-                latent=encoded_image,
-                strength=strength,
-                latent_idx=frame_idx,
+        # frame_idx is a pixel-frame index. Only frame 0 maps 1:1 onto a latent frame, so later
+        # frames are applied as keyframe guides instead of replacing latent index `frame_idx`.
+        if frame_idx == 0:
+            conditionings.append(VideoConditionByLatentIndex(latent=encoded_image, strength=strength, latent_idx=0))
+        else:
+            conditionings.append(
+                VideoConditionByKeyframeIndex(keyframes=encoded_image, frame_idx=frame_idx, strength=strength)
             )
-        )
 
     return conditionings
 

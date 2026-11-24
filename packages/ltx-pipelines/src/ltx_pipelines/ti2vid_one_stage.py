@@ -177,6 +177,7 @@ def main() -> None:
         num_inference_steps=args.num_inference_steps,
         cfg_guidance_scale=args.cfg_guidance_scale,
         images=args.images,
+        enhance_prompt=args.enhance_prompt,
     )
 
     encode_video(

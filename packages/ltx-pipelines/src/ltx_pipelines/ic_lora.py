@@ -295,6 +295,7 @@ def main() -> None:
         images=args.images,
         video_conditioning=args.video_conditioning,
         tiling_config=tiling_config,
+        enhance_prompt=args.enhance_prompt,
     )
 
     encode_video(
