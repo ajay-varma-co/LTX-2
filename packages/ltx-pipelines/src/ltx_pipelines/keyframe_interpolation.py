@@ -259,6 +259,7 @@ def main() -> None:
         cfg_guidance_scale=args.cfg_guidance_scale,
         images=args.images,
         tiling_config=tiling_config,
+        enhance_prompt=args.enhance_prompt,
     )
 
     encode_video(

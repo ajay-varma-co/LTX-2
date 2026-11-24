@@ -88,6 +88,7 @@ class LtxvTrainer:
         self._dataset = None
         self._global_step = -1
         self._checkpoint_paths = []
+        self._last_checkpoint_step: int | None = None
         self._init_wandb()
 
     def train(  # noqa: PLR0912, PLR0915
@@ -277,7 +278,13 @@ class LtxvTrainer:
             global_batch_size=cfg.optimization.batch_size * self._accelerator.num_processes,
         )
 
-        saved_path = self._save_checkpoint()
+        # Skip the final save if the last training step already wrote this step's checkpoint. Saving it
+        # again would register the same path twice, and keep_last_n cleanup would then delete it.
+        # Decided on every rank, since saving is a collective operation.
+        if self._last_checkpoint_step == self._global_step:
+            saved_path = self._checkpoint_paths[-1] if self._checkpoint_paths else None
+        else:
+            saved_path = self._save_checkpoint()
 
         if IS_MAIN_PROCESS:
             # Log the training statistics
@@ -867,6 +874,7 @@ class LtxvTrainer:
         # Get state dict (collective operation - all processes must participate)
         self._accelerator.wait_for_everyone()
         full_state_dict = self._accelerator.get_state_dict(self._transformer)
+        self._last_checkpoint_step = self._global_step
 
         if not IS_MAIN_PROCESS:
             return None
